@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="index.css">
+        <script type="text/javascript">
+        function grid(){
+            let symbolValidation = document.forms["stock_grid"]["symbol"].value;
+            let dateRange = document.forms["stock_grid"]["date_range"].value;
+            let table = document.getElementById("stock_data");
+            let apiUrl = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol="+symbolValidation+"&apikey=demo";
+            fetch(apiUrl).then(response => {
+              return response.json();
+            }).then(data => {
+                let stockData = data["Time Series (Daily)"];
+                let column1 = document.getElementById("open_data");
+                let column2 = document.getElementById("high_data");
+                let column3 = document.getElementById("low_data");
+                let column4 = document.getElementById("close_data");
+                let openCount = 0;
+                let highCount = 0;
+                let lowCount = 0;
+                let closeCount = 0;
+                for (const key in stockData)
+                {
+                    openCount++
+                    let row = document.createElement("tr");
+                    let node = document.createElement("td");               
+                    let textnode = document.createTextNode(stockData[key]["1. open"]);         
+                    node.appendChild(textnode); 
+                    row.appendChild(node)                          
+                    column1.appendChild(row);
+                    if(dateRange == "weekly" && openCount == 7) {
+                        table.style.cssText = "visibility: visible !important"
+                        break 
+                    }
+                    if(dateRange == "monthly" && openCount == 30){
+                        break
+                    }
+                }
+                for (const key in stockData)
+                {
+                    highCount++
+                    let row = document.createElement("tr");
+                    let node = document.createElement("td");               
+                    let textnode = document.createTextNode(stockData[key]["2. high"]);         
+                    node.appendChild(textnode); 
+                    row.appendChild(node)                          
+                    column2.appendChild(row);
+                    if(dateRange == "weekly" && highCount == 7) {
+                        break 
+                    }
+                    if(dateRange == "monthly" && highCount == 30){
+                        break
+                    }
+                }
+                for (const key in stockData)
+                {
+                    lowCount++
+                    let row = document.createElement("tr");
+                    let node = document.createElement("td");               
+                    let textnode = document.createTextNode(stockData[key]["3. low"]);         
+                    node.appendChild(textnode); 
+                    row.appendChild(node)                          
+                    column3.appendChild(row);
+                    if(dateRange == "weekly" && lowCount == 7) {
+                        break 
+                    }
+                    if(dateRange == "monthly" && lowCount == 30){
+                        break
+                    }
+                }
+                for (const key in stockData)
+                {
+                    closeCount++
+                    let row = document.createElement("tr");
+                    let node = document.createElement("td");               
+                    let textnode = document.createTextNode(stockData[key]["4. close"]);         
+                    node.appendChild(textnode); 
+                    row.appendChild(node)                          
+                    column4.appendChild(row);
+                    if(dateRange == "weekly" && closeCount == 7) {
+                        break 
+                    }
+                    if(dateRange == "monthly" && closeCount == 30){
+                        break
+                    }
+                }
+
+            }).catch(err => {
+              // Do something for an error here
+            });
+        }
+        </script>
+        
+    </head>
+
+
+    <body>
+        <form id="stock_grid" action="javascript:void(0);" onsubmit="grid()">
+            <div class="form-group">
+                <label for="symbol" data-bind="text: stockSymbol"></label>
+                <input id="symbol" class="form-control form-control-sm" type="text" name="symbol"/>
+            </div>
+            <div class="form-group">
+                <label for="date_range" data-bind="text: dateRange"></label>
+                <select id="date_range" class="form-control form-control-sm" name="date_range">
+                    <option value="weekly" data-bind="text: weekly"></option>
+                    <option value="monthly" data-bind="text: monthly"></option>
+                </select>
+                <button id="submit_button" class="btn btn-outline-primary" type="submit" name="submit" data-bind="text: submit"></button>
+            </div>
+        </form>
+        <table id="stock_data" class="table" style="visibility: hidden;">
+            <thead>
+            <tr>
+                <th id="open_data" class="col" data-bind="text: marketOpen"></th>
+                <th id="high_data" class="col" data-bind="text: marketHigh"></th>
+                <th id="low_data" class="col" data-bind="text: marketLow"></th>
+                <th id="close_data" class="col" data-bind="text: marketClose"></th>
+            </tr>
+            </thead>
+        </table>
+        <script type='text/javascript' src='knockout-3.5.1.js'></script>
+        <script>
+            let vm = {
+            marketOpen: ko.observable(),
+            marketClose: ko.observable(),
+            marketHigh: ko.observable(),
+            marketLow: ko.observable(),
+            stockSymbol: ko.observable(),
+            dateRange: ko.observable(),
+            weekly: ko.observable(),
+            monthly: ko.observable(),
+            submit: ko.observable()
+            };
+            vm.marketOpen("Market Open");
+            vm.marketClose("Market Close");
+            vm.marketLow("Market Low");
+            vm.marketHigh("Market High");
+            vm.stockSymbol("Input Stock Symbol");
+            vm.dateRange("Weekly or Monthly Reports:");
+            vm.weekly("Weekly");
+            vm.monthly("Monthly");
+            vm.submit("Submit");
+            ko.applyBindings(vm);
+        </script>
+    </body>
+</html>

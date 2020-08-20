@@ -1,0 +1,20 @@
+#open_data {
+    width: 25%;
+}
+
+#close_data {
+    width: 25%;
+}
+
+#low_data {
+    width: 25%;
+}
+
+#high_data {
+    width: 25%;
+}
+
+#submit_button {
+    margin-top: 0.5%;
+    margin-left: 0.5%;
+}
